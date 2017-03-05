@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Input
-from keras.layers.core import Flatten, Dense, Dropout, Lambda
+from keras.layers.core import Flatten, Dense, Dropout, Lambda, Activation
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
 from keras import backend as K
@@ -107,7 +107,19 @@ def AlexNet():
     model.add(BatchNormalization(1000))
     model.add(Activation('softmax'))
 
-
+def LeNet():
+    model = Sequential()
+    model.add(Convolution2D(6, 5, 5, input_shape=(160, 320, 3)))
+    model.add(Activation("relu"))
+    model.add(MaxPooling2D())
+    model.add(Convolution2D(6, 5, 5))
+    model.add(Activation("relu"))
+    model.add(MaxPooling2D())
+    model.add(Flatten())
+    model.add(Dense(120))
+    model.add(Dense(77))
+    model.add(Dense(1))
+    return model
 
 driving_log = pd.read_csv('training_data/driving_log.csv')
 nb_classes = len(driving_log)
@@ -127,7 +139,8 @@ def process_car_image():
         im_right = imread(image_right_path).astype(np.float32)
         im_right = im_right - np.mean(im_right)
 
-        list.extend([np.array(im_center), np.array(im_left), np.array(im_right)])
+        #list.extend([np.array(im_center), np.array(im_left), np.array(im_right)])
+        list.extend([im_center, im_left, im_right])
         yield list
 
 def process_steering_angle():
@@ -137,7 +150,8 @@ def process_steering_angle():
         steering_correction = 0.2
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
-        list.extend([str(steering_center), str(steering_left), str(steering_right)])
+        #list.extend([str(steering_center), str(steering_left), str(steering_right)])
+        list.extend([steering_center, steering_left, steering_right]) 
         yield list
 
 #if __name__ == '__main__':
@@ -155,24 +169,29 @@ for i in range(nb_classes):
 
 
 # model = AlexNet()
-model = VGG_16()
-# model = VGG16(include_top=False, weights=None, input_tensor=None, input_shape=(160, 320, 3))
-model.compile('sgd', 'mean_squared_error', ['accuracy'])
-# model.compile('adam', 'categorical_crossentropy', ['accuracy'])
+# model = VGG_16()
+# model.compile('sgd', 'mean_squared_error', ['accuracy'])
 
+'''
+model = Sequential()
+model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+model.add(Flatten())
+model.add(Dense(1))
+'''
+
+model = LeNet()
+model.compile(loss='mse', optimizer='adam')
 #X_train, X_val, y_train, y_val = train_test_split(car_images, steering_angles, test_size=0.33, random_state=0)
 X_train, y_train = shuffle(car_images, steering_angles) 
 
 X_train = np.array(X_train)
 y_train = np.array(y_train)
 
-from sklearn.preprocessing import LabelBinarizer
-label_binarizer = LabelBinarizer()
-y_one_hot = label_binarizer.fit_transform(y_train)
+# from sklearn.preprocessing import LabelBinarizer
+# label_binarizer = LabelBinarizer()
+# y_one_hot = label_binarizer.fit_transform(y_train)
 
-print(X_train.shape)
-print(y_one_hot.shape)
 print('Training...')
-history = model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
-
+# model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
+model.fit(X_train, y_train, validation_split=0.2, nb_epoch=5)
 model.save('model.h5')
