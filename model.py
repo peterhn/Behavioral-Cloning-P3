@@ -1,6 +1,7 @@
 from keras.models import Sequential
-from keras.layers import Input, Cropping2D
+from keras.layers import Input, Cropping2D, ELU
 from keras.layers import Conv2D, ConvLSTM2D, Dense, MaxPooling2D, Dropout, Flatten
+from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Flatten, Dense, Dropout, Lambda, Activation
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD, Adam
@@ -32,24 +33,44 @@ def LeNet():
     model.add(Dense(120))
     model.add(Dense(77))
     model.add(Dense(1))
+    model.compile(loss='mse', optimizer='adam')
     return model
 
-def model2():
-    model = Sequential([
-        Conv2D(32, 3, 3, input_shape=(160, 320, 3), border_mode='same', activation='relu'),
-        Conv2D(64, 3, 3, border_mode='same', activation='relu'),
-        Dropout(0.5),
-        Conv2D(128, 3, 3, border_mode='same', activation='relu'),
-        Conv2D(256, 3, 3, border_mode='same', activation='relu'),
-        Dropout(0.5),
-        Flatten(),
-        Dense(1024, activation='relu'),
-        Dense(512, activation='relu'),
-        Dense(128, activation='relu'),
-        Dense(1, name='output', activation='tanh'),
-    ])
-    model.compile(optimizer=Adam(lr=0.0001), loss='mse')
+def get_model():
+    h,w,c=32,64,3
+
+    model = Sequential()
+    model.add(Lambda(lambda x: x/127.5 - 1.,
+              input_shape=(h,w,c),
+              output_shape=(h,w,c)))
+    model.add(Convolution2D(3, 1, 1, subsample=(1, 1), border_mode='same',
+                            init = 'he_normal'))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Convolution2D(16, 5, 5, subsample=(4, 4), border_mode="same",
+                            init = 'he_normal'))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Convolution2D(32, 3, 3, subsample=(2, 2), border_mode="same",
+                            init = 'he_normal'))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Convolution2D(64, 3, 3, subsample=(2, 2), border_mode="same", 
+                            init = 'he_normal'))
+    model.add(Flatten())
+    model.add(Dropout(.2))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Dense(512))
+    model.add(Dropout(.5))
+    model.add(BatchNormalization())
+    model.add(ELU())
+    model.add(Dense(1))
+
+    model.compile(optimizer="adam", loss="mse")
+
     return model
+
 
 driving_log = pd.read_csv('training_data/driving_log.csv')
 nb_classes = len(driving_log)
@@ -100,9 +121,8 @@ for i in range(nb_classes):
 
 # model = AlexNet()
 # model = VGG_16()
-# model = LeNet()
-# model.compile(loss='mse', optimizer='adam')
-model = model2()
+model = LeNet()
+# model = get_model()
 #X_train, X_val, y_train, y_val = train_test_split(car_images, steering_angles, test_size=0.33, random_state=0)
 X_train, y_train = shuffle(car_images, steering_angles) 
 
@@ -115,5 +135,5 @@ y_train = np.array(y_train)
 
 print('Training...')
 # model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
-model.fit(X_train, y_train, validation_split=0.2, nb_epoch=5)
+model.fit(X_train, y_train, validation_split=0.2, nb_epoch=10)
 model.save('model.h5')
