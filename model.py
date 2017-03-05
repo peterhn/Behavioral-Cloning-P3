@@ -155,7 +155,7 @@ for i in range(nb_classes):
 
 
 # model = AlexNet()
-# model = VGG_16()
+model = VGG_16()
 # model = VGG16(include_top=False, weights=None, input_tensor=None, input_shape=(160, 320, 3))
 model.compile('sgd', 'mean_squared_error', ['accuracy'])
 # model.compile('adam', 'categorical_crossentropy', ['accuracy'])
