@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Input
-from keras.layers.core import Flatten, Dense, Dropout, Lambda, Activation
+from keras.layers.core import Flatten, Dense, Dropout, Lambda, Activation, Cropping2D
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
 from keras import backend as K
