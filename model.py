@@ -109,7 +109,10 @@ def AlexNet():
 
 def LeNet():
     model = Sequential()
-    model.add(Convolution2D(6, 5, 5, input_shape=(160, 320, 3)))
+    model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+    model.add(Cropping2D(cropping=((70,25), (0,0))))
+    model.add(Activation("relu"))
+    model.add(Convolution2D(6, 5, 5))
     model.add(Activation("relu"))
     model.add(MaxPooling2D())
     model.add(Convolution2D(6, 5, 5))
@@ -174,7 +177,6 @@ for i in range(nb_classes):
 
 '''
 model = Sequential()
-model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
 model.add(Flatten())
 model.add(Dense(1))
 '''
