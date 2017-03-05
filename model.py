@@ -1,8 +1,9 @@
 from keras.models import Sequential
 from keras.layers import Input, Cropping2D
+from keras.layers import Conv2D, ConvLSTM2D, Dense, MaxPooling2D, Dropout, Flatten
 from keras.layers.core import Flatten, Dense, Dropout, Lambda, Activation
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras.applications.vgg16 import VGG16
 
@@ -15,97 +16,6 @@ import pandas as pd
 
 import cv2, numpy as np
 
-
-def VGG_16(weights_path=None):
-    model = Sequential()
-    model.add(ZeroPadding2D((1,1),input_shape=(160, 320, 3)))
-    model.add(Convolution2D(64, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(64, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
-
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(128, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(128, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
-
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
-
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
-
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
-    model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
-
-    model.add(Flatten())
-    model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(4096, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(77, activation='softmax'))
-
-    if weights_path:
-        model.load_weights(weights_path)
-
-    return model
-
-def AlexNet():
-    from keras.models import Sequential
-    from keras.layers.core import Dense, Dropout, Activation, Flatten
-    from keras.layers.convolutional import Convolution2D, MaxPooling2D
-    from keras.layers.normalization import BatchNormalization
-
-    #AlexNet with batch normalization in Keras 
-    #input image is 224x224
-
-    model = Sequential()
-    model.add(Convolution2D(64, 3, 11, border_mode='same', input_shape=(160,320,3)))
-    model.add(BatchNormalization((64,226,226)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(poolsize=(3, 3)))
-
-    model.add(Convolution2D(128, 64, 7, border_mode='same'))
-    model.add(BatchNormalization((128,115,115)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(poolsize=(3, 3)))
-
-    model.add(Convolution2D(192, 128, 3, border_mode='same'))
-    model.add(BatchNormalization((128,112,112)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(poolsize=(3, 3)))
-
-    model.add(Convolution2D(256, 192, 3, border_mode='same'))
-    model.add(BatchNormalization((128,108,108)))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(poolsize=(3, 3)))
-
-    model.add(Flatten())
-    model.add(Dense(12*12*256, 4096, init='normal'))
-    model.add(BatchNormalization(4096))
-    model.add(Activation('relu'))
-    model.add(Dense(4096, 4096, init='normal'))
-    model.add(BatchNormalization(4096))
-    model.add(Activation('relu'))
-    model.add(Dense(4096, 1000, init='normal'))
-    model.add(BatchNormalization(1000))
-    model.add(Activation('softmax'))
 
 def LeNet():
     model = Sequential()
@@ -122,6 +32,23 @@ def LeNet():
     model.add(Dense(120))
     model.add(Dense(77))
     model.add(Dense(1))
+    return model
+
+def model2():
+    model = Sequential([
+        Conv2D(32, 3, 3, input_shape=(160, 320, 3), border_mode='same', activation='relu'),
+        Conv2D(64, 3, 3, border_mode='same', activation='relu'),
+        Dropout(0.5),
+        Conv2D(128, 3, 3, border_mode='same', activation='relu'),
+        Conv2D(256, 3, 3, border_mode='same', activation='relu'),
+        Dropout(0.5),
+        Flatten(),
+        Dense(1024, activation='relu'),
+        Dense(512, activation='relu'),
+        Dense(128, activation='relu'),
+        Dense(1, name='output', activation='tanh'),
+    ])
+    model.compile(optimizer=Adam(lr=0.0001), loss='mse')
     return model
 
 driving_log = pd.read_csv('training_data/driving_log.csv')
@@ -173,16 +100,9 @@ for i in range(nb_classes):
 
 # model = AlexNet()
 # model = VGG_16()
-# model.compile('sgd', 'mean_squared_error', ['accuracy'])
-
-'''
-model = Sequential()
-model.add(Flatten())
-model.add(Dense(1))
-'''
-
-model = LeNet()
-model.compile(loss='mse', optimizer='adam')
+# model = LeNet()
+# model.compile(loss='mse', optimizer='adam')
+model = model2()
 #X_train, X_val, y_train, y_val = train_test_split(car_images, steering_angles, test_size=0.33, random_state=0)
 X_train, y_train = shuffle(car_images, steering_angles) 
 
