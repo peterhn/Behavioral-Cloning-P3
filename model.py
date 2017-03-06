@@ -101,7 +101,7 @@ def process_steering_angle():
     list = []
     for i in range(nb_classes):
         steering_center = driving_log.ix[i][3]
-        steering_correction = 0.3
+        steering_correction = 0.4
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
         #list.extend([str(steering_center), str(steering_left), str(steering_right)])
@@ -139,5 +139,5 @@ y_train = np.array(y_train)
 
 print('Training...')
 # model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
-model.fit(X_train, y_train, validation_split=0.2, nb_epoch=10, batch_size=128)
+model.fit(X_train, y_train, validation_split=0.2, nb_epoch=10)
 model.save('model.h5')
