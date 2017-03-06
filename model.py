@@ -69,7 +69,7 @@ def NvidiaNet():
     model.add(Flatten())
     model.add(Dense(120))
     model.add(Dense(50))
-    model.add(Dense(10))
+    model.add(Dense(1))
     model.compile(loss='mse', optimizer='adam')
     return model
 
@@ -101,7 +101,7 @@ def process_steering_angle():
     list = []
     for i in range(nb_classes):
         steering_center = driving_log.ix[i][3]
-        steering_correction = 0.1
+        steering_correction = 0.25
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
         #list.extend([str(steering_center), str(steering_left), str(steering_right)])
