@@ -139,5 +139,5 @@ y_train = np.array(y_train)
 
 print('Training...')
 # model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
-model.fit(X_train, y_train, validation_split=0.2, nb_epoch=5)
+model.fit(X_train, y_train, validation_split=0.2, nb_epoch=10)
 model.save('model.h5')
