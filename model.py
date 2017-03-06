@@ -93,8 +93,8 @@ def process_car_image():
         im_right = im_right - np.mean(im_right)
 
         #list.extend([np.array(im_center), np.array(im_left), np.array(im_right)])
-        list.extend([im_center, im_left, im_right])
-        #list.extend([im_center])
+        #list.extend([im_center, im_left, im_right])
+        list.extend([im_center])
         yield list
 
 def process_steering_angle():
@@ -105,8 +105,8 @@ def process_steering_angle():
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
         #list.extend([str(steering_center), str(steering_left), str(steering_right)])
-        list.extend([steering_center, steering_left, steering_right]) 
-        #list.extend([steering_center])
+        #list.extend([steering_center, steering_left, steering_right]) 
+        list.extend([steering_center])
         yield list
 
 #if __name__ == '__main__':
