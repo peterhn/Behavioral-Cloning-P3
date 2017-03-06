@@ -93,8 +93,8 @@ def process_car_image():
         im_right = im_right - np.mean(im_right)
 
         #list.extend([np.array(im_center), np.array(im_left), np.array(im_right)])
-        #list.extend([im_center, im_left, im_right])
-        list.extend([im_center])
+        list.extend([im_center, im_left, im_right])
+        #list.extend([im_center])
         yield list
 
 def process_steering_angle():
@@ -139,5 +139,5 @@ y_train = np.array(y_train)
 
 print('Training...')
 # model.fit(X_train, y_one_hot, batch_size=128, nb_epoch=2, validation_split=0.2)
-model.fit(X_train, y_train, validation_split=0.2, nb_epoch=5)
+model.fit(X_train, y_train, validation_split=0.2, nb_epoch=10, batch_size=128)
 model.save('model.h5')
