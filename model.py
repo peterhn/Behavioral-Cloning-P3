@@ -69,7 +69,7 @@ def NvidiaNet():
     model.add(Flatten())
     model.add(Dense(120))
     model.add(Dense(50))
-    model.add(Dense(1))
+    model.add(Dense(10))
     model.compile(loss='mse', optimizer='adam')
     return model
 
@@ -93,20 +93,20 @@ def process_car_image():
         im_right = im_right - np.mean(im_right)
 
         #list.extend([np.array(im_center), np.array(im_left), np.array(im_right)])
-        #list.extend([im_center, im_left, im_right])
-        list.extend([im_center])
+        list.extend([im_center, im_left, im_right])
+        #list.extend([im_center])
         yield list
 
 def process_steering_angle():
     list = []
     for i in range(nb_classes):
         steering_center = driving_log.ix[i][3]
-        steering_correction = 0.2
+        steering_correction = 0.1
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
         #list.extend([str(steering_center), str(steering_left), str(steering_right)])
-        #list.extend([steering_center, steering_left, steering_right]) 
-        list.extend([steering_center])
+        list.extend([steering_center, steering_left, steering_right]) 
+        #list.extend([steering_center])
         yield list
 
 #if __name__ == '__main__':
