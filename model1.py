@@ -85,11 +85,10 @@ def frame_generator(frames, batch_size=128, training=True):
         yield (np.array(images), np.array(angles))
 
 # use the generator to produce an example output image
-'''
 g = frame_generator(frames, batch_size=1, training=True)
 images, angles = next(g)
 input_shape = images[0].shape
-
+'''
 # Plot example input image after preprocessing
 fig, ax = plt.subplots(figsize=(10,10))
 ax.set_title('Example Image After Preprocessing')
