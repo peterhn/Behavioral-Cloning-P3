@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 data_path = os.path.join(os.getcwd(), "training_data")
 
 def read_image(filename):
+    print(filename)
     filename = os.path.join(data_path, filename.strip())
     bgr = cv2.imread(filename)
     cropped = bgr[30:135, 0:320]
