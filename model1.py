@@ -85,6 +85,7 @@ def frame_generator(frames, batch_size=128, training=True):
         yield (np.array(images), np.array(angles))
 
 # use the generator to produce an example output image
+'''
 g = frame_generator(frames, batch_size=1, training=True)
 images, angles = next(g)
 input_shape = images[0].shape
@@ -105,7 +106,7 @@ plt.hist(angles, bins=101)
 print("shape: {}".format(input_shape))
 print("number of frames: {}".format(num_frames))
 print("batch len: {},{}".format(len(images), len(angles)))
-
+'''
 
 model = Sequential()
 model.add(Lambda(lambda x: x/128.0 - 1.0,input_shape=input_shape))
