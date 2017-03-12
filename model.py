@@ -101,7 +101,7 @@ def process_steering_angle():
     list = []
     for i in range(nb_classes):
         steering_center = driving_log.ix[i][3]
-        steering_correction = 0.5
+        steering_correction = 0.45
         steering_left = steering_center + steering_correction
         steering_right = steering_center - steering_correction
         #list.extend([str(steering_center), str(steering_left), str(steering_right)])
