@@ -148,6 +148,7 @@ model.fit_generator(data_gen, samples_per_epoch=num_train_samples, nb_epoch=25, 
 with open('model.json', mode='w', encoding='utf8') as f:
     f.write(model.to_json())
 
-model.save_weights('model.h5')
+#model.save_weights('model.h5')
+model.save('model.h5')
 
 print("Model saved")
