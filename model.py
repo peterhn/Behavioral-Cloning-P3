@@ -44,7 +44,7 @@ def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
         shuffle(samples)
-        steering_correction = 0.11
+        steering_correction = 0.2
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
             
@@ -81,10 +81,10 @@ for i in range(nb_classes):
     samples.append(driving_log.ix[i])
 
 from sklearn.model_selection import train_test_split
-train_samples, validation_samples = train_test_split(samples, test_size=0.5)
+train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
-train_generator = generator(train_samples, batch_size=256)
-validation_generator = generator(validation_samples, batch_size=256)
+train_generator = generator(train_samples, batch_size=128)
+validation_generator = generator(validation_samples, batch_size=128)
 
 model = NvidiaNet()
 model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=10)
