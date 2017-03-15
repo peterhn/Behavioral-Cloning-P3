@@ -21,8 +21,8 @@ import cv2, numpy as np
 
 def NvidiaNet():
     model = Sequential()
-    #model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
-    model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
+    model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+    #model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
     model.add(Cropping2D(cropping=((70,25), (0,0))))
     model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation="relu"))
     model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation="relu"))
@@ -81,16 +81,14 @@ for i in range(nb_classes):
     samples.append(driving_log.ix[i])
 
 from sklearn.model_selection import train_test_split
-train_samples, validation_samples = train_test_split(samples, test_size=0.2)
+train_samples, validation_samples = train_test_split(samples, test_size=0.5)
 
 train_generator = generator(train_samples, batch_size=256)
 validation_generator = generator(validation_samples, batch_size=256)
 
 model = NvidiaNet()
-model.fit_generator(train_generator, samples_per_epoch= \
-            len(train_samples), validation_data=validation_generator, \
-            nb_val_samples=len(validation_samples), nb_epoch=10)
-
+model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=10)
+model.save('model.h5')
 ''' NON-GENERATOR OPTION
 def process_car_image():
     list = []
