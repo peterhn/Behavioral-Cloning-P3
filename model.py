@@ -8,21 +8,18 @@ from keras.optimizers import SGD, Adam
 from keras import backend as K
 from keras.applications.vgg16 import VGG16
 
-from scipy.misc import imread
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
-
 import pandas as pd
-
-import cv2, numpy as np
-
+import cv2
+import numpy as np
 
 def NvidiaNet():
     model = Sequential()
-    model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
-    #model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
+    #model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160,320,3)))
+    model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
     model.add(Cropping2D(cropping=((70,25), (0,0))))
     model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation="relu"))
     model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation="relu"))
@@ -37,7 +34,7 @@ def NvidiaNet():
     return model
 
 
-driving_log = pd.read_csv('training_data/driving_log.csv')
+driving_log = pd.read_csv('sample_training_data/driving_log.csv')
 nb_classes = len(driving_log)
 
 def generator(samples, batch_size=32):
@@ -47,48 +44,50 @@ def generator(samples, batch_size=32):
         steering_correction = 0.2
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
-            
+
             images = []
             angles = []
             for batch_sample in batch_samples:
                 name_center = batch_sample[0]
-                center_image = cv2.imread(name_center)
+                center_image = cv2.imread(name_center.strip())
                 center_angle = float(batch_sample[3])
 
                 # randomly flip the image and angle
                 name_left = batch_sample[1]
-                left_image = cv2.imread(name_left)
+                left_image = cv2.imread(name_left.strip())
                 left_angle = center_angle + steering_correction
                 if np.random.sample() > 0.5:
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
-
-
+                
                 name_right = batch_sample[2]
-                right_image = cv2.imread(name_right)
+                right_image = cv2.imread(name_right.strip())
                 right_angle = center_angle - steering_correction
-
+                if np.random.sample() > 0.5:
+                    right_image = cv2.flip(right_image, 1)
+                    right_angle = right_angle * -1.0
                 images.extend([center_image, left_image, right_image])
                 angles.extend([center_angle, left_angle, right_angle])
 
-            # trim image to only see section with road
-            X_train = np.array(images)
+            x_train = np.array(images)
             y_train = np.array(angles)
-            yield sklearn.utils.shuffle(X_train, y_train)
+            yield sklearn.utils.shuffle(x_train, y_train)
+def run():
+    samples = []
+    for i in range(nb_classes):
+        samples.append(driving_log.ix[i])
+    train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
-samples = []
-for i in range(nb_classes):
-    samples.append(driving_log.ix[i])
+    print('Training Samples Length: ', len(train_samples))
+    train_generator = generator(train_samples, batch_size=128)
+    validation_generator = generator(validation_samples, batch_size=128)
 
-from sklearn.model_selection import train_test_split
-train_samples, validation_samples = train_test_split(samples, test_size=0.2)
+    model = NvidiaNet()
+    model.fit_generator(train_generator, samples_per_epoch=len(train_samples) * 3, validation_data=validation_generator, nb_val_samples=len(validation_samples) * 3, nb_epoch=25)
+    model.save('model.h5')
 
-train_generator = generator(train_samples, batch_size=128)
-validation_generator = generator(validation_samples, batch_size=128)
+run()
 
-model = NvidiaNet()
-model.fit_generator(train_generator, samples_per_epoch=len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=10)
-model.save('model.h5')
 ''' NON-GENERATOR OPTION
 def process_car_image():
     list = []
