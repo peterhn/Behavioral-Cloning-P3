@@ -41,7 +41,7 @@ def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
         shuffle(samples)
-        steering_correction = 0.2
+        steering_correction = 0.11
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
 
