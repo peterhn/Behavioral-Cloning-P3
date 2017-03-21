@@ -81,7 +81,7 @@ def NvidiaNet():
     model.add(Flatten())
     model.add(Dense(120))
     model.add(Dense(50))
-    model.add(Dropout(0,5))
+    model.add(Dropout(0.5))
     model.add(BatchNormalization())
     model.add(ELU())
     model.add(Dense(1))
@@ -116,6 +116,9 @@ def generator(samples, batch_size=32):
                 right_angle = center_angle - steering_correction
  
                 if np.random.sample() > 0.5:
+                    center_image = cv2.flip(center_image, 1)
+                    center_angle = center_angle * -1.0
+
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
                 
