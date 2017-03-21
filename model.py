@@ -1,5 +1,5 @@
 import json
-from keras.models import Sequential
+from keras.models import Sequential, model_from_json
 from keras.layers import Input, Cropping2D, ELU
 from keras.layers import Conv2D, ConvLSTM2D, Dense, MaxPooling2D, Dropout, Flatten
 from keras.layers.normalization import BatchNormalization
@@ -19,7 +19,7 @@ import numpy as np
 
 def NvidiaNet():
     model = Sequential()
-
+    
     # normalize -1<>+1
     model.add(Lambda(lambda x: x/127.5 - 1.,
               input_shape=(160, 320, 3)))
@@ -69,7 +69,7 @@ def NvidiaNet():
 
     # Answer
     model.add(Dense(1)) 
-    ''' 
+    '''
     model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
     model.add(Cropping2D(cropping=((70,25), (0,0))))
@@ -85,8 +85,7 @@ def NvidiaNet():
     model.add(BatchNormalization())
     model.add(ELU())
     model.add(Dense(1))
-    ''' 
-    model.compile(loss='mse', optimizer='adam')
+    '''
     return model
 
 driving_log = pd.read_csv('sample_training_data/driving_log.csv')
@@ -120,7 +119,6 @@ def generator(samples, batch_size=32):
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
                 
-                if np.random.sample() > 0.5:
                     right_image = cv2.flip(right_image, 1)
                     right_angle = right_angle * -1.0
                 images.extend([center_image, left_image, right_image])
@@ -130,6 +128,18 @@ def generator(samples, batch_size=32):
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(x_train, y_train)
 def run():
+    try:
+        with open('model.json', 'r') as jfile:
+	        model = model_from_json(json.load(jfile))
+
+        # import weights
+        model.load_weights('model.h5')
+
+        print("Imported model and weights")
+    except:
+          print('Loading new model')
+          model = NvidiaNet()
+
     samples = []
     for i in range(nb_classes):
         samples.append(driving_log.ix[i])
@@ -139,9 +149,9 @@ def run():
     train_generator = generator(train_samples, batch_size=256)
     validation_generator = generator(validation_samples, batch_size=256)
 
-    model = NvidiaNet()
+    model.compile(loss='mse', optimizer='adam')
     model.fit_generator(train_generator, samples_per_epoch=len(train_samples) * 3, validation_data=validation_generator, nb_val_samples=len(validation_samples) * 3, nb_epoch=10)
-        
+
     model.save('model.h5')
     model_data = model.to_json()
     with open('model.json', 'w') as outfile:
