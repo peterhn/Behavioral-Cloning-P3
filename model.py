@@ -19,7 +19,7 @@ import numpy as np
 
 def NvidiaNet():
     model = Sequential()
-    
+    '''    
     # normalize -1<>+1
     model.add(Lambda(lambda x: x/127.5 - 1.,
               input_shape=(160, 320, 3)))
@@ -85,7 +85,7 @@ def NvidiaNet():
     model.add(BatchNormalization())
     model.add(ELU())
     model.add(Dense(1))
-    '''
+    
     return model
 
 driving_log = pd.read_csv('sample_training_data/driving_log.csv')
