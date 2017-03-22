@@ -118,9 +118,9 @@ def generator(samples, batch_size=32):
                 if np.random.sample() > 0.5:
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
-                if np.random.sample() > 0.5:
-                    right_image = cv2.flip(right_image, 1)
-                    right_angle = right_angle * -1.0
+                #if np.random.sample() > 0.5:
+                    #right_image = cv2.flip(right_image, 1)
+                    #right_angle = right_angle * -1.0
                 images.extend([center_image, left_image, right_image])
                 angles.extend([center_angle, left_angle, right_angle])
 
