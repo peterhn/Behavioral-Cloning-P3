@@ -105,7 +105,8 @@ def generator(samples, batch_size=32):
                 name_center = batch_sample[0]
                 center_image = cv2.imread(name_center.strip())
                 center_angle = float(batch_sample[3])
-
+                center_image = cv2.flip(center_image, 1)
+                center_angle = center_angle * -1.0
                 # randomly flip the image and angle
                 name_left = batch_sample[1]
                 left_image = cv2.imread(name_left.strip())
@@ -116,12 +117,9 @@ def generator(samples, batch_size=32):
                 right_angle = center_angle - steering_correction
  
                 if np.random.sample() > 0.5:
-                    center_image = cv2.flip(center_image, 1)
-                    center_angle = center_angle * -1.0
-
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
-                
+                if np.random.sample() > 0.5:
                     right_image = cv2.flip(right_image, 1)
                     right_angle = right_angle * -1.0
                 images.extend([center_image, left_image, right_image])
