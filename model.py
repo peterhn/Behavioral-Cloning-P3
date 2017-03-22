@@ -81,9 +81,9 @@ def NvidiaNet():
     model.add(Flatten())
     model.add(Dense(120))
     model.add(Dense(50))
-    model.add(Dropout(0.5))
-    model.add(BatchNormalization())
-    model.add(ELU())
+    #model.add(Dropout(0.5))
+    #model.add(BatchNormalization())
+    #model.add(ELU())
     model.add(Dense(1))
     
     return model
