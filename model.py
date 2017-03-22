@@ -95,7 +95,7 @@ def generator(samples, batch_size=32):
     num_samples = len(samples)
     while 1: # Loop forever so the generator never terminates
         shuffle(samples)
-        steering_correction = 0.11
+        steering_correction = 0.12
         for offset in range(0, num_samples, batch_size):
             batch_samples = samples[offset:offset+batch_size]
 
@@ -105,8 +105,7 @@ def generator(samples, batch_size=32):
                 name_center = batch_sample[0]
                 center_image = cv2.imread(name_center.strip())
                 center_angle = float(batch_sample[3])
-                center_image = cv2.flip(center_image, 1)
-                center_angle = center_angle * -1.0
+
                 # randomly flip the image and angle
                 name_left = batch_sample[1]
                 left_image = cv2.imread(name_left.strip())
