@@ -1,12 +1,12 @@
 #**Behavioral Cloning** 
-15208
+
 ##Writeup Template
 
 ###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
-**Behavrioal Cloning Project**
+**Behavioral Cloning Project**
 
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
@@ -54,12 +54,17 @@ The model.py file contains the code for training and saving the convolution neur
 
 ####1. An appropriate model arcthiecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+My model was based off of Nvidia research on deep learning network for applications in self driving cars. It consists of a convolution neural network with 5x5 and 3x3 filter sizes with between 24 and 64. (model.py lines 24 - 28)
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+The model also includes RELU layers to introduce nonlinearity, and data is normalized using a Keras lambda layer.
+
+The model also crops out the tops and bottoms of each image in order to save memory and only train on the parts of image that mattered.
 
 ####2. Attempts to reduce overfitting in the model
 
+The model was trained and validated on sample dataset so it might simply fit to that data. There were other techniques to reduce overfitting in the model, including randomly flipping left biased image to remove the left turn bias of the track.
+
+--
 The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
 
 The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.

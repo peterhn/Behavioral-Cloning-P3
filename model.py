@@ -19,58 +19,6 @@ import numpy as np
 
 def NvidiaNet():
     model = Sequential()
-    '''    
-    # normalize -1<>+1
-    model.add(Lambda(lambda x: x/127.5 - 1.,
-              input_shape=(160, 320, 3)))
-
-    model.add(Cropping2D(cropping=((70,25), (0,0))))
-
-    # Conv Layer #0 (depth=3, kernel=1x1) - change color space
-    model.add(Convolution2D(3, 1, 1, border_mode='same'))
-
-    # Conv Layer #1 (depth=24, kernel=5x5)
-    model.add(Convolution2D(24, 5, 5, border_mode='valid'))
-    model.add(ELU())
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.5))
-
-    # Conv Layer #2 (depth=36, kernel=5x5)
-    model.add(Convolution2D(36, 5, 5, border_mode='valid'))
-    model.add(ELU())
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.5))
-
-    # Conv Layer #3 (depth=48, kernel=3x3)
-    model.add(Convolution2D(48, 3, 3, border_mode='valid'))
-    model.add(ELU())
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.5))
-
-    # Conv Layer #4 (depth=64, kernel=3x3)
-    model.add(Convolution2D(64, 3, 3, border_mode='valid'))
-    model.add(ELU())
-    model.add(MaxPooling2D(pool_size=(2,2)))
-    model.add(Dropout(0.5))
-
-    model.add(Flatten())
-
-    # Hidden Layer #1
-    model.add(Dense(100))
-    model.add(ELU())
-
-    # Hidden Layer #2
-    model.add(Dense(50))
-    model.add(ELU())
-
-    # Hidden Layer #3
-    model.add(Dense(10))
-    model.add(ELU())
-
-    # Answer
-    model.add(Dense(1)) 
-    '''
-    model = Sequential()
     model.add(Lambda(lambda x: x/127.5 - 1, input_shape=(160,320,3)))
     model.add(Cropping2D(cropping=((70,25), (0,0))))
     model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation="relu"))
@@ -81,11 +29,7 @@ def NvidiaNet():
     model.add(Flatten())
     model.add(Dense(120))
     model.add(Dense(50))
-    #model.add(Dropout(0.5))
-    #model.add(BatchNormalization())
-    #model.add(ELU())
     model.add(Dense(1))
-    
     return model
 
 driving_log = pd.read_csv('sample_training_data/driving_log.csv')
@@ -118,9 +62,6 @@ def generator(samples, batch_size=32):
                 if np.random.sample() > 0.5:
                     left_image = cv2.flip(left_image, 1)
                     left_angle = left_angle * -1.0
-                #if np.random.sample() > 0.5:
-                    #right_image = cv2.flip(right_image, 1)
-                    #right_angle = right_angle * -1.0
                 images.extend([center_image, left_image, right_image])
                 angles.extend([center_angle, left_angle, right_angle])
 
