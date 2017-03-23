@@ -77,7 +77,8 @@ def run():
         model.load_weights('model.h5')
 
         print("Imported model and weights")
-    except:
+    except Exception as e:
+          print(e)
           print('Loading new model')
           model = NvidiaNet()
 
