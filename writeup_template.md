@@ -4,12 +4,12 @@
 
 ## Files in this zip
 ---
-* model.py script to train and save model
-* drive.py script to tell car how to steer in simulator
-* model.json model architecture
-* model.h5 model weights
-* writeup_report.md
-
+* ```model.py ``` script to train and save model
+* ```drive.py``` script to tell car how to steer in simulator
+* ```model.json``` model architecture
+* ```model.h5``` model weights
+* ```writeup_report.md```
+* ```run.mp4``` video of
 ## Dataset
 ---
 ### 1. Dataset Characteristics
