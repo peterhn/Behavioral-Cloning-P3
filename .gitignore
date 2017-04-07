@@ -2,3 +2,5 @@
 *.un~
 *.mp4
 *.zip
+.vscode/
+__pycache__/
